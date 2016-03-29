@@ -4,3 +4,6 @@
 3. rails g controller and write the methods that render the correct JSON and handle error cases
 4. Configure the routes
 5. Migrate your database
+
+## Notes
+[Rails API basic setup](https://github.com/sf-fiddler-crabs-2016/rails-api-lecture)
