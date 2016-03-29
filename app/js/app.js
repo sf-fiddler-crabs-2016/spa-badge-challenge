@@ -103,9 +103,12 @@ function $(selector){
   }
 
   self.attr = function(name, value){
-    if(!value) return self.element.getAttribute(name)
-    self.element.setAttribute(name, value);
-    return self;
+    all = self.element
+    for (var i = 0; i < all.length; i++){
+      if(all[i].innerHTML == value){
+        console.log(all[i])
+      }
+    }
   }
 
   self.on = function(type, callback){
