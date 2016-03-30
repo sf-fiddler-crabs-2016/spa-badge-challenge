@@ -67,27 +67,55 @@ var EventDispatcher = (function(){
   }
 })();
 
+var AjaxWrapper = {};
+ (function(exports) {
 
-var AjaxWrapper = (function(){
-  return{
-    request: function(args){
-      return new Promise(function(resolve, reject){
-        var xhr = new XMLHttpRequest()
-        xhr.open(args.type, args.url);
-        xhr.onload = function() {
-          if (xhr.status === 200 && xhr.status <= 300) {
-            resolve(xhr.responseText);
-          } else {
-            reject('Request failed.  Returned status of ' + xhr.status);
-          }
-        }
-      xhr.send(args.data);
+   exports.request = function(args) {
+     var promise = new Promise( function(resolve, reject){
+         var ajax = new XMLHttpRequest();
+
+         ajax.addEventListener('load', transferComplete);
+         ajax.addEventListener('error', transferFailed);
+         ajax.open(args.type, args.url);
+         ajax.send();
+
+         function transferComplete(){
+           resolve(this);
+           console.log('good')
+         };
+
+         function transferFailed(){
+           reject(this);
+           console.log('bad')
+         }
       })
-    }
-  }
-})();
+     return promise;
+   };
+ })(AjaxWrapper);
+
+// var AjaxWrapper = (function(){
+//   return{
+//     request: function(args){
+//       return new Promise(function(resolve, reject){
+//         var xhr = new XMLHttpRequest()
+//         xhr.open(args.type, args.url);
+//         xhr.onload = function() {
+//           if (xhr.status === 200 && xhr.status <= 300) {
+//             resolve(xhr.responseText);
+//           } else {
+//             reject('Request failed.  Returned status of ' + xhr.status);
+//           }
+//         }
+//       xhr.send(args.data);
+//       })
+//     }
+//   }
+// })();
 
 // AjaxWrapper.request({}).then(function(response))
+// url: "url"
+// type: "GET/POST"
+// data: "something"
 // AjaxWrapper.request({}).catch(function(r)
 
 
@@ -97,6 +125,14 @@ function $(selector){
   self.selector = selector;
   self.element = SweetSelector.select(self.selector)
   // self.element = document.querySelector(self.selector);
+
+  self.ready = function (callback){
+    if (document.readyState == "complete"){
+      callback();
+    } else {
+      document.addEventListener("DOMContentLoaded", callback);
+    }
+  }
 
   self.html = function(){
     return self.element;
@@ -111,9 +147,13 @@ function $(selector){
     }
   }
 
-  self.on = function(type, callback){
+  self.on = function(event, runThisFunction){
+    // debugger
+    // debugger
+    // EventDispatcher.on(self.element, event, runThisFunction
+    // EventDispatcher.on(self.element, event, runThisFunction)
     self.element['on' + type] = callback
-    return self;
+    // return self;
   }
 
   self.show = function(){
@@ -135,21 +175,3 @@ function $(selector){
 }
 
 
-
-// function .jax(){
-//   // vanalla JS ajax request
-
-//   var xhr = new XMLHttpRequest
-//   xhr.onreadystate = someCallBack;
-//   function someCallBack(){
-//     if (xhr.status !== 200){
-//       // xhr request was bad
-//       alert("It's all bad!");
-//       return;
-//     }
-//     // When code is good in the hood run these
-//     console.log(xhr.responseText);
-//   }
-//   xhr.open('GET', 'url here', "true for asyn/false for syn request");
-//   xhr.send('data sending if POST request')
-// }
